@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,6 +16,11 @@ serve(async (req) => {
   }
 
   try {
+    // Supabase 클라이언트 초기화
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
     // 요청 본문 파싱
     let requestBody;
     try {
@@ -31,7 +37,7 @@ serve(async (req) => {
       );
     }
 
-    const { prompt } = requestBody;
+    const { prompt, style } = requestBody;
 
     if (!prompt) {
       console.log('프롬프트가 없음');
@@ -47,12 +53,11 @@ serve(async (req) => {
     // OpenAI API 키 확인
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     console.log('OpenAI API Key 존재 여부:', !!openAIApiKey);
-    console.log('OpenAI API Key 길이:', openAIApiKey ? openAIApiKey.length : 0);
     
     if (!openAIApiKey) {
       console.error('OPENAI_API_KEY가 설정되지 않았습니다.');
       return new Response(
-        JSON.stringify({ error: 'OpenAI API 키가 설정되지 않았습니다. Supabase 설정에서 OPENAI_API_KEY를 확인해주세요.' }),
+        JSON.stringify({ error: 'OpenAI API 키가 설정되지 않았습니다.' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -62,7 +67,7 @@ serve(async (req) => {
 
     console.log('OpenAI API 요청 시작, 프롬프트:', prompt);
 
-    // OpenAI 이미지 생성 API 호출 (더 간단한 모델 사용)
+    // OpenAI 이미지 생성 API 호출
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -70,11 +75,11 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'dall-e-3',  // 더 안정적인 모델 사용
+        model: 'dall-e-3',
         prompt: prompt,
         n: 1,
         size: '1024x1024',
-        quality: 'standard',  // high -> standard로 변경
+        quality: 'standard',
         response_format: 'url'
       }),
     });
@@ -105,19 +110,9 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('OpenAI API 성공 응답:', data);
+    console.log('OpenAI API 성공 응답받음');
 
-    if (data.data && data.data.length > 0) {
-      const imageUrl = data.data[0].url;
-      console.log('생성된 이미지 URL:', imageUrl);
-      
-      return new Response(
-        JSON.stringify({ imageUrl }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
-    } else {
+    if (!data.data || data.data.length === 0) {
       console.error('응답에 이미지 데이터가 없음:', data);
       return new Response(
         JSON.stringify({ error: '이미지 생성에 실패했습니다.' }),
@@ -127,6 +122,64 @@ serve(async (req) => {
         }
       );
     }
+
+    const imageUrl = data.data[0].url;
+    console.log('생성된 이미지 URL:', imageUrl);
+
+    // OpenAI에서 이미지 다운로드
+    console.log('OpenAI에서 이미지 다운로드 시작');
+    const imageResponse = await fetch(imageUrl);
+    if (!imageResponse.ok) {
+      throw new Error('OpenAI 이미지 다운로드 실패');
+    }
+
+    const imageBuffer = await imageResponse.arrayBuffer();
+    const imageBlob = new Uint8Array(imageBuffer);
+    console.log('이미지 다운로드 완료, 크기:', imageBlob.length, 'bytes');
+
+    // Supabase Storage에 업로드
+    const fileName = `education-${Date.now()}-${Math.random().toString(36).substring(7)}.png`;
+    const filePath = `images/${fileName}`;
+    
+    console.log('Supabase Storage 업로드 시작:', filePath);
+    
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('education-images')
+      .upload(filePath, imageBlob, {
+        contentType: 'image/png',
+        cacheControl: '3600'
+      });
+
+    if (uploadError) {
+      console.error('Storage 업로드 오류:', uploadError);
+      return new Response(
+        JSON.stringify({ error: `Storage 업로드 실패: ${uploadError.message}` }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    console.log('Storage 업로드 성공:', uploadData);
+
+    // 공개 URL 생성
+    const { data: publicUrlData } = supabase.storage
+      .from('education-images')
+      .getPublicUrl(filePath);
+
+    const publicUrl = publicUrlData.publicUrl;
+    console.log('공개 URL 생성:', publicUrl);
+
+    return new Response(
+      JSON.stringify({ 
+        imageUrl: publicUrl,
+        storagePath: filePath
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
 
   } catch (error) {
     console.error('이미지 생성 함수 오류:', error);

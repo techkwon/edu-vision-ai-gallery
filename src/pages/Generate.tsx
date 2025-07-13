@@ -53,7 +53,8 @@ const Generate = () => {
 
       const response = await supabase.functions.invoke('generate-image', {
         body: {
-          prompt: fullPrompt
+          prompt: fullPrompt,
+          style: style
         }
       });
 
@@ -67,16 +68,17 @@ const Generate = () => {
       const data = response.data;
       console.log('응답 데이터:', data);
       
-      if (data.imageUrl) {
+      if (data && data.imageUrl) {
         setGeneratedImage(data.imageUrl);
         
-        // Save to database
+        // Save to database with storage path
         const { data: imageData, error } = await supabase
           .from('generated_images')
           .insert({
             prompt: prompt,
             style: style,
-            image_url: data.imageUrl
+            image_url: data.imageUrl,
+            storage_path: data.storagePath
           })
           .select()
           .single();
@@ -114,42 +116,25 @@ const Generate = () => {
     if (!generatedImage) return;
     
     try {
-      console.log('다운로드 시작:', generatedImage);
+      console.log('Supabase Storage에서 다운로드 시작:', generatedImage);
       
-      // Supabase 엣지 함수를 통해 이미지 프록시
-      const response = await supabase.functions.invoke('download-image', {
-        body: { imageUrl: generatedImage }
-      });
+      // Supabase Storage URL에서 직접 다운로드
+      const response = await fetch(generatedImage);
       
-      if (response.error) {
-        throw new Error(response.error.message || '이미지 다운로드에 실패했습니다.');
+      if (!response.ok) {
+        throw new Error(`다운로드 실패: ${response.status} ${response.statusText}`);
       }
       
-      const { imageData, contentType } = response.data;
+      const blob = await response.blob();
+      console.log('Blob 생성 완료:', blob.size, 'bytes');
       
-      if (!imageData) {
-        throw new Error('이미지 데이터를 받을 수 없습니다.');
-      }
-      
-      console.log('프록시된 이미지 데이터 수신 완료');
-      
-      // Base64 데이터를 Blob으로 변환
-      const byteCharacters = atob(imageData.split(',')[1]);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: contentType || 'image/png' });
-      
-      // 파일 확장자 결정
+      // 파일 타입 확인
+      const contentType = response.headers.get('content-type') || blob.type || 'image/png';
       let extension = 'png';
-      if (contentType) {
-        if (contentType.includes('jpeg') || contentType.includes('jpg')) {
-          extension = 'jpg';
-        } else if (contentType.includes('webp')) {
-          extension = 'webp';
-        }
+      if (contentType.includes('jpeg') || contentType.includes('jpg')) {
+        extension = 'jpg';
+      } else if (contentType.includes('webp')) {
+        extension = 'webp';
       }
       
       // 다운로드 실행

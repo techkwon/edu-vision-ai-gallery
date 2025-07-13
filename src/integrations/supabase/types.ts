@@ -20,6 +20,7 @@ export type Database = {
           id: string
           image_url: string
           prompt: string
+          storage_path: string | null
           style: string | null
           updated_at: string
         }
@@ -28,6 +29,7 @@ export type Database = {
           id?: string
           image_url: string
           prompt: string
+          storage_path?: string | null
           style?: string | null
           updated_at?: string
         }
@@ -36,6 +38,7 @@ export type Database = {
           id?: string
           image_url?: string
           prompt?: string
+          storage_path?: string | null
           style?: string | null
           updated_at?: string
         }
