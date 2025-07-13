@@ -12,16 +12,16 @@
     --foreground: 15 23 42;
     
     /* Primary Colors - Electric Blue Gradient */
-    --primary: 236 72 153;
+    --primary: 139 92 246;
     --primary-foreground: 248 250 252;
-    --primary-glow: 139 92 246;
+    --primary-glow: 236 72 153;
     
     /* Secondary Colors - Soft Indigo */
     --secondary: 241 245 249;
     --secondary-foreground: 51 65 85;
     
     /* Accent Colors - Vibrant Purple */
-    --accent: 139 92 246;
+    --accent: 236 72 153;
     --accent-foreground: 248 250 252;
     
     /* Muted Colors */
@@ -35,7 +35,7 @@
     /* Border & Input Colors */
     --border: 226 232 240;
     --input: 226 232 240;
-    --ring: 236 72 153;
+    --ring: 139 92 246;
     
     /* Destructive Colors */
     --destructive: 239 68 68;
@@ -46,15 +46,15 @@
     --popover-foreground: 15 23 42;
 
     /* Design System Enhancements */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-hero: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--accent) / 0.1));
+    --gradient-primary: linear-gradient(135deg, hsl(139 92% 70%), hsl(236 72% 60%));
+    --gradient-hero: linear-gradient(135deg, hsl(139 92% 70% / 0.1), hsl(236 72% 60% / 0.1));
     --gradient-card: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
     
     /* Shadows */
-    --shadow-soft: 0 4px 6px -1px hsl(var(--primary) / 0.1), 0 2px 4px -1px hsl(var(--primary) / 0.06);
-    --shadow-medium: 0 10px 15px -3px hsl(var(--primary) / 0.1), 0 4px 6px -2px hsl(var(--primary) / 0.05);
-    --shadow-large: 0 25px 50px -12px hsl(var(--primary) / 0.25);
-    --shadow-glow: 0 0 20px hsl(var(--primary-glow) / 0.3);
+    --shadow-soft: 0 4px 6px -1px hsl(139 92% 70% / 0.1), 0 2px 4px -1px hsl(139 92% 70% / 0.06);
+    --shadow-medium: 0 10px 15px -3px hsl(139 92% 70% / 0.1), 0 4px 6px -2px hsl(139 92% 70% / 0.05);
+    --shadow-large: 0 25px 50px -12px hsl(139 92% 70% / 0.25);
+    --shadow-glow: 0 0 20px hsl(236 72% 60% / 0.3);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
