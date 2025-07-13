@@ -51,21 +51,17 @@ const Generate = () => {
       const selectedStyle = styles.find(s => s.value === style);
       const fullPrompt = `${prompt}, ${selectedStyle?.prompt}`;
 
-      const response = await fetch('/api/generate-image', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const response = await supabase.functions.invoke('generate-image', {
+        body: {
           prompt: fullPrompt
-        }),
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('이미지 생성에 실패했습니다');
+      if (response.error) {
+        throw new Error(response.error.message || '이미지 생성에 실패했습니다');
       }
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.imageUrl) {
         setGeneratedImage(data.imageUrl);
