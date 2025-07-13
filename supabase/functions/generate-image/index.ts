@@ -26,10 +26,12 @@ serve(async (req) => {
     }
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    console.log('OpenAI API Key 존재 여부:', !!openAIApiKey);
+    
     if (!openAIApiKey) {
       console.error('OPENAI_API_KEY가 설정되지 않았습니다.');
       return new Response(
-        JSON.stringify({ error: 'OpenAI API 키가 설정되지 않았습니다.' }),
+        JSON.stringify({ error: 'OpenAI API 키가 설정되지 않았습니다. Supabase 설정에서 OPENAI_API_KEY를 확인해주세요.' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

@@ -57,11 +57,15 @@ const Generate = () => {
         }
       });
 
+      console.log('Supabase 함수 응답:', response);
+
       if (response.error) {
+        console.error('Supabase 함수 오류:', response.error);
         throw new Error(response.error.message || '이미지 생성에 실패했습니다');
       }
 
       const data = response.data;
+      console.log('응답 데이터:', data);
       
       if (data.imageUrl) {
         setGeneratedImage(data.imageUrl);
@@ -89,10 +93,16 @@ const Generate = () => {
         });
       }
     } catch (error) {
-      console.error('Generation error:', error);
+      console.error('이미지 생성 오류 상세:', error);
+      let errorMessage = '이미지 생성 중 오류가 발생했습니다.';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "생성 실패",
-        description: "이미지 생성 중 오류가 발생했습니다. 다시 시도해주세요.",
+        description: errorMessage + " 다시 시도해주세요.",
         variant: "destructive",
       });
     } finally {
