@@ -147,7 +147,7 @@ const Generate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4">
+    <div className="min-h-screen bg-gradient-hero mobile-scroll p-4">
       <div className="container mx-auto max-w-4xl">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -167,7 +167,7 @@ const Generate = () => {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Input Section */}
-          <Card className="bg-white border shadow-lg">
+          <Card className="card-glass card-animated">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" />
@@ -210,7 +210,7 @@ const Generate = () => {
               <Button 
                 onClick={handleGenerate}
                 disabled={isGenerating || !prompt.trim() || !style}
-                className="btn-hero w-full"
+                className="btn-hero w-full touch-target"
               >
                 {isGenerating ? (
                   <>
@@ -228,7 +228,7 @@ const Generate = () => {
           </Card>
 
           {/* Result Section */}
-          <Card className="bg-white border shadow-lg">
+          <Card className="card-glass card-animated">
             <CardHeader>
               <CardTitle>생성 결과</CardTitle>
             </CardHeader>
