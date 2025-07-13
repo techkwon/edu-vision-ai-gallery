@@ -29,48 +29,57 @@ body {
 /* Tailwind CSS 변수 설정 */
 @layer base {
   :root {
-    --background: 255 255 255;
-    --foreground: 31 41 55;
-    --card: 255 255 255;
-    --card-foreground: 31 41 55;
-    --popover: 255 255 255;
-    --popover-foreground: 31 41 55;
-    --primary: 59 130 246;
-    --primary-foreground: 255 255 255;
-    --secondary: 243 244 246;
-    --secondary-foreground: 75 85 99;
-    --muted: 243 244 246;
-    --muted-foreground: 107 114 128;
-    --accent: 139 92 246;
-    --accent-foreground: 255 255 255;
-    --destructive: 239 68 68;
-    --destructive-foreground: 255 255 255;
-    --border: 229 231 235;
-    --input: 229 231 235;
-    --ring: 59 130 246;
+    /* 아름다운 HSL 색상 시스템 */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
     --radius: 0.75rem;
+    
+    /* 그라데이션 */
+    --gradient-hero: linear-gradient(135deg, 
+      hsl(217, 91%, 60%), 
+      hsl(262, 83%, 58%));
+    --gradient-card: linear-gradient(145deg, 
+      rgba(255, 255, 255, 0.25), 
+      rgba(255, 255, 255, 0.05));
   }
 
   .dark {
-    --background: 31 41 55;
-    --foreground: 255 255 255;
-    --card: 55 65 81;
-    --card-foreground: 255 255 255;
-    --popover: 55 65 81;
-    --popover-foreground: 255 255 255;
-    --primary: 96 165 250;
-    --primary-foreground: 31 41 55;
-    --secondary: 75 85 99;
-    --secondary-foreground: 255 255 255;
-    --muted: 75 85 99;
-    --muted-foreground: 156 163 175;
-    --accent: 167 139 250;
-    --accent-foreground: 31 41 55;
-    --destructive: 239 68 68;
-    --destructive-foreground: 255 255 255;
-    --border: 75 85 99;
-    --input: 75 85 99;
-    --ring: 96 165 250;
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 222 47% 11%;
+    --secondary-foreground: 213 31% 91%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 213 31% 91%;
+    --border: 223 47% 11%;
+    --input: 223 47% 11%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -319,6 +328,69 @@ body {
     width: 2rem;
     height: 2rem;
     animation: spin 1s linear infinite;
+  }
+  }
+  
+  /* 그라데이션 배경 */
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  /* 글래스모피즘 카드 */
+  .card-glass {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* 히어로 버튼 */
+  .btn-hero {
+    background: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(262, 83%, 58%));
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    min-height: 48px;
+  }
+  
+  .btn-hero:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+  
+  /* 애니메이션 카드 */
+  .card-animated {
+    transition: all 0.3s ease;
+  }
+  
+  .card-animated:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* 텍스트 그라데이션 */
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(262, 83%, 58%));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* 모바일 반응형 */
+  .mobile-responsive {
+    padding: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-responsive {
+      padding: 1.5rem;
+    }
   }
 }
 
