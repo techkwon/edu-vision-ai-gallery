@@ -51,20 +51,57 @@ const Gallery = () => {
 
   const handleDownload = async (imageUrl: string, prompt: string) => {
     try {
-      const response = await fetch(imageUrl);
+      console.log('갤러리 다운로드 시작:', imageUrl);
+      
+      const response = await fetch(imageUrl, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Accept': 'image/*',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`이미지 다운로드 실패: ${response.status} ${response.statusText}`);
+      }
+      
       const blob = await response.blob();
+      console.log('Blob 생성 완료:', blob.size, 'bytes');
+      
+      // 파일 타입 확인
+      const contentType = response.headers.get('content-type') || blob.type;
+      let extension = 'png';
+      if (contentType.includes('jpeg') || contentType.includes('jpg')) {
+        extension = 'jpg';
+      } else if (contentType.includes('webp')) {
+        extension = 'webp';
+      }
+      
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `ai-vision-${prompt.slice(0, 20)}-${Date.now()}.png`;
+      a.download = `ai-education-${prompt.slice(0, 20).replace(/[^a-zA-Z0-9가-힣]/g, '_')}-${Date.now()}.${extension}`;
+      a.style.display = 'none';
+      
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      
+      // 클린업
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 100);
+      
+      toast({
+        title: "다운로드 완료",
+        description: "이미지가 성공적으로 다운로드되었습니다.",
+      });
+      
     } catch (error) {
+      console.error('갤러리 다운로드 오류:', error);
       toast({
         title: "다운로드 실패",
-        description: "이미지 다운로드 중 오류가 발생했습니다.",
+        description: error instanceof Error ? error.message : "이미지 다운로드 중 오류가 발생했습니다.",
         variant: "destructive",
       });
     }
