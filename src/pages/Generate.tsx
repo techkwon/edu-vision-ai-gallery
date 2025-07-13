@@ -18,12 +18,12 @@ const Generate = () => {
   const { toast } = useToast();
 
   const styles = [
-    { value: "watercolor", label: "따뜻한 수채화 스타일", prompt: "in a warm watercolor style with soft educational elements" },
-    { value: "illustration", label: "교육적 일러스트", prompt: "as an inspiring educational illustration with books, learning symbols, and warm lighting" },
-    { value: "minimalist", label: "미니멀 교육 아트", prompt: "as minimalist educational art with clean lines, books, and learning symbols" },
-    { value: "academic", label: "클래식 아카데믹", prompt: "in classical academic style with scholarly elements and warm library atmosphere" },
-    { value: "modern", label: "현대 교육 스타일", prompt: "in modern educational style with contemporary classroom elements and inspiring atmosphere" },
-    { value: "nature", label: "자연 친화 교육", prompt: "blending education with nature, showing growth and learning in natural settings" },
+    { value: "watercolor", label: "수채화", prompt: "in a warm watercolor style with soft educational elements" },
+    { value: "ink", label: "수묵화", prompt: "in traditional Korean ink painting style with educational themes" },
+    { value: "illustration", label: "일러스트", prompt: "as an inspiring educational illustration with books, learning symbols, and warm lighting" },
+    { value: "minimalist", label: "미니멀", prompt: "as minimalist educational art with clean lines, books, and learning symbols" },
+    { value: "realistic", label: "사실화", prompt: "in realistic style showing educational scenes with natural lighting" },
+    { value: "abstract", label: "추상화", prompt: "in abstract style representing educational concepts through colors and shapes" },
   ];
 
   const handleGenerate = async () => {
@@ -232,7 +232,7 @@ const Generate = () => {
 
               {/* Style Selection */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">스타일</label>
+                <label className="text-sm font-medium">이미지 스타일 선택</label>
                 <Select value={style} onValueChange={setStyle}>
                   <SelectTrigger>
                     <SelectValue placeholder="이미지 스타일을 선택하세요" />
