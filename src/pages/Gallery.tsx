@@ -88,7 +88,7 @@ const Gallery = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-hero flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="spinner mx-auto mb-4" />
           <p className="text-muted-foreground">갤러리를 불러오는 중...</p>
@@ -98,7 +98,7 @@ const Gallery = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-hero p-4">
+    <div className="min-h-screen bg-white p-4">
       <div className="container mx-auto max-w-7xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -144,7 +144,7 @@ const Gallery = () => {
         </div>
 
         {images.length === 0 ? (
-          <Card className="card-glass text-center py-16">
+          <Card className="bg-white border shadow-lg text-center py-16">
             <CardContent>
               <div className="space-y-4">
                 <div className="text-muted-foreground">
@@ -163,8 +163,8 @@ const Gallery = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {images.map((image) => (
               <Dialog key={image.id}>
-                <DialogTrigger asChild>
-                  <Card className="card-glass card-animated overflow-hidden group">
+                 <DialogTrigger asChild>
+                   <Card className="bg-white border shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer">
                     <div className="relative">
                       <img 
                         src={image.image_url} 
@@ -226,7 +226,7 @@ const Gallery = () => {
         ) : (
           /* Focus View */
           <div className="max-w-4xl mx-auto">
-            <Card className="card-glass overflow-hidden">
+            <Card className="bg-white border shadow-lg overflow-hidden">
               <div className="relative">
                 <img 
                   src={images[currentIndex]?.image_url} 
