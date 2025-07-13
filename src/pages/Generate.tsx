@@ -161,7 +161,7 @@ const Generate = () => {
             홈으로
           </Button>
           <h1 className="text-3xl font-display font-bold text-gradient">
-            AI 이미지 생성
+          AI 교육 철학 시각화
           </h1>
         </div>
 
@@ -171,19 +171,22 @@ const Generate = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-primary" />
-                텍스트로 이미지 만들기
+                나의 교육 철학 표현하기
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Prompt Input */}
+              {/* Philosophy Input */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">프롬프트</label>
+                <label className="text-sm font-medium">교육 철학 (한 문장으로 표현)</label>
                 <Textarea
-                  placeholder="예: 아름다운 산 풍경, 노을이 지는 호수, 귀여운 고양이..."
+                  placeholder="예: 나는 따뜻한 질문을 통해 학생들의 숨겨진 가능성을 이끌어내는 교사다."
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   className="min-h-[120px] resize-none"
                 />
+                <p className="text-xs text-muted-foreground">
+                  💡 팁: 가장 중요하게 생각하는 교육적 가치나 신념을 담아 문장을 만들어보세요
+                </p>
               </div>
 
               {/* Style Selection */}
@@ -217,7 +220,7 @@ const Generate = () => {
                 ) : (
                   <>
                     <Sparkles className="h-5 w-5 mr-2" />
-                    이미지 생성하기
+                    교육 철학 이미지 생성하기
                   </>
                 )}
               </Button>

@@ -10,28 +10,28 @@ const Index = () => {
   const features = [
     {
       icon: <Sparkles className="h-8 w-8" />,
-      title: "AI 이미지 생성",
-      description: "텍스트만으로 놀라운 이미지를 만들어보세요",
+      title: "교육 철학 시각화",
+      description: "나만의 교육 철학을 한 문장으로 표현하고 AI 이미지로 만들어보세요",
       action: () => navigate('/generate')
     },
     {
       icon: <Images className="h-8 w-8" />,
-      title: "갤러리 탐험",
-      description: "다양한 AI 아트 작품들을 감상하세요",
+      title: "동료 교사 갤러리",
+      description: "다른 선생님들의 교육 철학 이미지를 감상하고 영감을 받으세요",
       action: () => navigate('/gallery')
     },
     {
-      icon: <Palette className="h-8 w-8" />,
-      title: "다양한 스타일",
-      description: "수채화부터 사이버펑크까지 원하는 스타일로",
+      icon: <Heart className="h-8 w-8" />,
+      title: "교육적 가치 공유",
+      description: "따뜻한 교육 철학을 시각적으로 나누며 교육 공동체를 만들어가요",
       action: () => navigate('/generate')
     }
   ];
 
   const stats = [
-    { number: "1000+", label: "생성된 이미지" },
-    { number: "50+", label: "다양한 스타일" },
-    { number: "24/7", label: "언제든 이용가능" }
+    { number: "500+", label: "교육 철학 이미지" },
+    { number: "100+", label: "참여 교사" },
+    { number: "무한", label: "교육적 영감" }
   ];
 
   return (
@@ -44,15 +44,15 @@ const Index = () => {
               <Sparkles className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-display font-bold text-gradient">
-              AI Vision Gallery
+              AI 교육 철학 갤러리
             </span>
           </div>
           <div className="flex gap-4">
             <Button variant="outline" onClick={() => navigate('/gallery')}>
-              갤러리
+              동료 갤러리
             </Button>
             <Button className="btn-hero" onClick={() => navigate('/generate')}>
-              이미지 생성
+              철학 시각화
             </Button>
           </div>
         </div>
@@ -64,13 +64,13 @@ const Index = () => {
           <div className="space-y-8">
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl font-display font-bold leading-tight">
-                <span className="text-gradient">AI로 그리는</span>
+                <span className="text-gradient">AI, 내 교육 철학을</span>
                 <br />
-                <span className="text-foreground">무한한 상상</span>
+                <span className="text-foreground">그려줘!</span>
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                텍스트 한 줄로 놀라운 이미지를 만들어보세요. 
-                최첨단 AI 기술이 당신의 상상을 현실로 만들어드립니다.
+                자신의 교육 철학을 한 문장으로 표현하고, AI를 통해 세상에 하나뿐인 이미지로 만들어보세요. 
+                동료 교사들과 따뜻한 교육적 가치를 나누며 교육 공동체를 만들어가요.
               </p>
             </div>
 
@@ -81,7 +81,7 @@ const Index = () => {
                 onClick={() => navigate('/generate')}
               >
                 <Sparkles className="h-5 w-5 mr-2" />
-                지금 시작하기
+                나의 철학 그리기
                 <ArrowRight className="h-5 w-5 ml-2" />
               </Button>
               <Button 
@@ -91,7 +91,7 @@ const Index = () => {
                 onClick={() => navigate('/gallery')}
               >
                 <Images className="h-5 w-5 mr-2" />
-                갤러리 구경하기
+                동료 교사 갤러리
               </Button>
             </div>
 
