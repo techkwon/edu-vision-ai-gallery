@@ -37,88 +37,96 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-hero">
       {/* Navigation */}
-      <nav className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-white" />
+      <nav className="nav-glass sticky top-0 z-50 animate-blur-in">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
+                <Sparkles className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-xl font-semibold text-gradient">
+                AI 교육 철학 갤러리
+              </span>
             </div>
-            <span className="text-xl font-display font-bold text-gradient">
-              AI 교육 철학 갤러리
-            </span>
-          </div>
-          <div className="flex gap-4">
-            <Button variant="outline" onClick={() => navigate('/gallery')}>
-              동료 갤러리
-            </Button>
-            <Button className="btn-hero" onClick={() => navigate('/generate')}>
-              철학 시각화
-            </Button>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => navigate('/gallery')}
+                className="px-6 py-2.5 bg-white/60 backdrop-blur-lg border border-white/30 rounded-xl font-medium text-gray-700 hover:bg-white/80 transition-all duration-300 hover:shadow-lg"
+              >
+                동료 갤러리
+              </button>
+              <button 
+                onClick={() => navigate('/generate')}
+                className="btn-hero"
+              >
+                철학 시각화
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h1 className="text-5xl lg:text-6xl font-display font-bold leading-tight">
+      <section className="container mx-auto px-6 py-20">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="space-y-10 animate-blur-in">
+            <div className="space-y-6">
+              <h1 className="text-6xl lg:text-7xl font-bold leading-tight">
                 <span className="text-gradient">AI, 내 교육 철학을</span>
                 <br />
                 <span className="text-foreground">그려줘!</span>
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
+              <p className="text-xl text-gray-600 leading-relaxed font-medium">
                 자신의 교육 철학을 한 문장으로 표현하고, AI를 통해 세상에 하나뿐인 이미지로 만들어보세요. 
+                <br className="hidden lg:block" />
                 동료 교사들과 따뜻한 교육적 가치를 나누며 교육 공동체를 만들어가요.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
-                className="btn-hero text-lg px-8 py-6"
+            <div className="flex flex-col sm:flex-row gap-6">
+              <button 
                 onClick={() => navigate('/generate')}
+                className="btn-hero text-lg px-10 py-4 flex items-center justify-center gap-3"
               >
-                <Sparkles className="h-5 w-5 mr-2" />
+                <Sparkles className="h-6 w-6" />
                 나의 철학 그리기
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="text-lg px-8 py-6"
+                <ArrowRight className="h-6 w-6" />
+              </button>
+              <button 
                 onClick={() => navigate('/gallery')}
+                className="px-10 py-4 bg-white/60 backdrop-blur-lg border border-white/30 rounded-xl font-semibold text-lg text-gray-700 hover:bg-white/80 transition-all duration-300 hover:shadow-lg flex items-center justify-center gap-3"
               >
-                <Images className="h-5 w-5 mr-2" />
+                <Images className="h-6 w-6" />
                 동료 교사 갤러리
-              </Button>
+              </button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 pt-8">
+            <div className="grid grid-cols-3 gap-8 pt-10">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
-                  <div className="text-2xl font-bold text-gradient">{stat.number}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  <div className="text-3xl font-bold text-gradient mb-1">{stat.number}</div>
+                  <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="relative">
-            <div className="relative rounded-2xl overflow-hidden shadow-large animate-float">
-              <img 
-                src={heroImage} 
-                alt="AI Vision Gallery Hero"
-                className="w-full h-auto"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+          <div className="relative animate-float">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-gradient-primary p-1">
+              <div className="rounded-3xl overflow-hidden bg-white">
+                <img 
+                  src={heroImage} 
+                  alt="AI 교육 철학 갤러리"
+                  className="w-full h-auto"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              </div>
             </div>
             
             {/* Floating Elements */}
             <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-primary rounded-full opacity-20 animate-bounce" />
-            <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r from-accent to-primary rounded-full opacity-30 animate-pulse" />
+            <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-full opacity-30 animate-pulse" />
           </div>
         </div>
       </section>
