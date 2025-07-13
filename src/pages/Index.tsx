@@ -239,7 +239,7 @@ const Index = () => {
       <footer className="py-8 border-t border-gray-200">
         <div className="mobile-container">
           <div className="text-center text-gray-600">
-            <p className="text-sm">&copy; 2024 AI 교육 철학 갤러리. Made with ❤️ and AI.</p>
+            <p className="text-sm">Made by TechKwon</p>
           </div>
         </div>
       </footer>
