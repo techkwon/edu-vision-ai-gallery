@@ -133,7 +133,7 @@
   /* Animated Card */
   .card-animated {
     @apply transition-all duration-300 hover:shadow-medium hover:-translate-y-1;
-    @apply cursor-pointer group;
+    @apply cursor-pointer;
   }
   
   /* Gradient Text */
