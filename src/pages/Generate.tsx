@@ -18,12 +18,12 @@ const Generate = () => {
   const { toast } = useToast();
 
   const styles = [
-    { value: "watercolor", label: "따뜻한 수채화 스타일", prompt: "in a vibrant watercolor style" },
-    { value: "illustration", label: "동화 일러스트", prompt: "as a cozy storybook illustration" },
-    { value: "minimalist", label: "미니멀 라인 아트", prompt: "as minimalist line art, clean background" },
-    { value: "fantasy", label: "판타지 아트", prompt: "as glowing fantasy art" },
-    { value: "anime", label: "애니메이션 스타일", prompt: "as a detailed anime scene" },
-    { value: "cyberpunk", label: "사이버펑크", prompt: "in cyberpunk style with neon colors" },
+    { value: "watercolor", label: "따뜻한 수채화 스타일", prompt: "in a warm watercolor style with soft educational elements" },
+    { value: "illustration", label: "교육적 일러스트", prompt: "as an inspiring educational illustration with books, learning symbols, and warm lighting" },
+    { value: "minimalist", label: "미니멀 교육 아트", prompt: "as minimalist educational art with clean lines, books, and learning symbols" },
+    { value: "academic", label: "클래식 아카데믹", prompt: "in classical academic style with scholarly elements and warm library atmosphere" },
+    { value: "modern", label: "현대 교육 스타일", prompt: "in modern educational style with contemporary classroom elements and inspiring atmosphere" },
+    { value: "nature", label: "자연 친화 교육", prompt: "blending education with nature, showing growth and learning in natural settings" },
   ];
 
   const handleGenerate = async () => {
@@ -49,7 +49,7 @@ const Generate = () => {
 
     try {
       const selectedStyle = styles.find(s => s.value === style);
-      const fullPrompt = `${prompt}, ${selectedStyle?.prompt}`;
+      const fullPrompt = `Educational philosophy concept: "${prompt}". This represents a teacher's core educational belief and teaching approach. Visual representation ${selectedStyle?.prompt}. Include symbolic elements of education, learning, growth, and inspiration.`;
 
       const response = await supabase.functions.invoke('generate-image', {
         body: {
