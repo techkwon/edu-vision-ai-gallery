@@ -116,38 +116,47 @@ const Generate = () => {
     try {
       console.log('다운로드 시작:', generatedImage);
       
-      // CORS 프록시를 통해 이미지 다운로드
-      const response = await fetch(generatedImage, {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Accept': 'image/*',
-        },
+      // Supabase 엣지 함수를 통해 이미지 프록시
+      const response = await supabase.functions.invoke('download-image', {
+        body: { imageUrl: generatedImage }
       });
       
-      if (!response.ok) {
-        throw new Error(`이미지 다운로드 실패: ${response.status} ${response.statusText}`);
+      if (response.error) {
+        throw new Error(response.error.message || '이미지 다운로드에 실패했습니다.');
       }
       
-      const blob = await response.blob();
-      console.log('Blob 생성 완료:', blob.size, 'bytes');
+      const { imageData, contentType } = response.data;
       
-      // 파일 타입 확인
-      const contentType = response.headers.get('content-type') || blob.type;
-      console.log('Content-Type:', contentType);
+      if (!imageData) {
+        throw new Error('이미지 데이터를 받을 수 없습니다.');
+      }
+      
+      console.log('프록시된 이미지 데이터 수신 완료');
+      
+      // Base64 데이터를 Blob으로 변환
+      const byteCharacters = atob(imageData.split(',')[1]);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: contentType || 'image/png' });
       
       // 파일 확장자 결정
       let extension = 'png';
-      if (contentType.includes('jpeg') || contentType.includes('jpg')) {
-        extension = 'jpg';
-      } else if (contentType.includes('webp')) {
-        extension = 'webp';
+      if (contentType) {
+        if (contentType.includes('jpeg') || contentType.includes('jpg')) {
+          extension = 'jpg';
+        } else if (contentType.includes('webp')) {
+          extension = 'webp';
+        }
       }
       
+      // 다운로드 실행
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `ai-education-philosophy-${Date.now()}.${extension}`;
+      a.download = `교육철학-이미지-${Date.now()}.${extension}`;
       a.style.display = 'none';
       
       document.body.appendChild(a);

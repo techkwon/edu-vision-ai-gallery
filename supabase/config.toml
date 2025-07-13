@@ -34,3 +34,6 @@ port = 54329
 
 [functions.generate-image]
 verify_jwt = false
+
+[functions.download-image]
+verify_jwt = false
