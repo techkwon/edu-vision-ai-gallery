@@ -337,11 +337,11 @@ body {
   
   /* 글래스모피즘 카드 */
   .card-glass {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 1rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   }
   
   /* 히어로 버튼 */
@@ -375,15 +375,19 @@ body {
   
   /* 텍스트 그라데이션 */
   .text-gradient {
-    background: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(262, 83%, 58%));
+    background: linear-gradient(135deg, hsl(217, 91%, 50%), hsl(262, 83%, 48%));
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    font-weight: 700;
   }
   
   /* 모바일 반응형 */
   .mobile-responsive {
     padding: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 1rem;
   }
   
   @media (min-width: 768px) {
