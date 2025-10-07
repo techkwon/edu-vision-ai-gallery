@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Generate from "./pages/Generate";
 import Gallery from "./pages/Gallery";
+import StorageCleanup from "./pages/StorageCleanup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/generate" element={<Generate />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/admin/storage-cleanup" element={<StorageCleanup />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
