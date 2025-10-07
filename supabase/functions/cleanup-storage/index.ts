@@ -23,25 +23,41 @@ Deno.serve(async (req) => {
 
     console.log('스토리지 정리 시작...');
 
-    // education-images 버킷의 모든 파일 목록 가져오기
-    const { data: files, error: listError } = await supabase
-      .storage
-      .from('education-images')
-      .list('', {
-        limit: 1000,
-        sortBy: { column: 'created_at', order: 'desc' }
-      });
+    let allFiles: any[] = [];
+    let offset = 0;
+    const limit = 100;
+    let hasMore = true;
 
-    if (listError) {
-      throw new Error(`스토리지 목록 조회 실패: ${listError.message}`);
+    // 모든 파일 가져오기 (페이지네이션)
+    while (hasMore) {
+      const { data: files, error: listError } = await supabase
+        .storage
+        .from('education-images')
+        .list('', {
+          limit: limit,
+          offset: offset,
+          sortBy: { column: 'created_at', order: 'desc' }
+        });
+
+      if (listError) {
+        throw new Error(`스토리지 목록 조회 실패: ${listError.message}`);
+      }
+
+      if (files && files.length > 0) {
+        allFiles = [...allFiles, ...files];
+        offset += limit;
+        hasMore = files.length === limit;
+      } else {
+        hasMore = false;
+      }
     }
 
-    console.log(`스토리지 파일 총: ${files?.length || 0}개`);
+    console.log(`스토리지 파일 총: ${allFiles.length}개`);
 
     // .emptyFolderPlaceholder를 제외한 모든 파일 삭제
-    const filesToDelete = files?.filter(file => 
+    const filesToDelete = allFiles.filter(file => 
       file.name !== '.emptyFolderPlaceholder'
-    ) || [];
+    );
 
     console.log(`삭제할 파일: ${filesToDelete.length}개`);
 
@@ -49,7 +65,7 @@ Deno.serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           message: '정리할 파일이 없습니다.',
-          totalFiles: files?.length || 0
+          totalFiles: allFiles.length
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -58,24 +74,32 @@ Deno.serve(async (req) => {
       );
     }
 
-    // 파일 삭제 (배치 처리)
-    const pathsToDelete = filesToDelete.map(f => f.name);
-    const { data: deleteData, error: deleteError } = await supabase
-      .storage
-      .from('education-images')
-      .remove(pathsToDelete);
+    // 파일 삭제 (배치로 100개씩)
+    let deletedCount = 0;
+    for (let i = 0; i < filesToDelete.length; i += 100) {
+      const batch = filesToDelete.slice(i, i + 100);
+      const pathsToDelete = batch.map(f => f.name);
+      
+      const { error: deleteError } = await supabase
+        .storage
+        .from('education-images')
+        .remove(pathsToDelete);
 
-    if (deleteError) {
-      throw new Error(`파일 삭제 실패: ${deleteError.message}`);
+      if (deleteError) {
+        console.error(`배치 ${i / 100 + 1} 삭제 실패:`, deleteError.message);
+      } else {
+        deletedCount += pathsToDelete.length;
+        console.log(`배치 ${i / 100 + 1} 삭제 완료: ${pathsToDelete.length}개`);
+      }
     }
 
-    console.log(`삭제 완료: ${pathsToDelete.length}개 파일`);
+    console.log(`전체 삭제 완료: ${deletedCount}개 파일`);
 
     return new Response(
       JSON.stringify({ 
         message: '스토리지 정리 완료',
-        deletedFiles: pathsToDelete.length,
-        deletedPaths: pathsToDelete
+        deletedFiles: deletedCount,
+        totalFiles: allFiles.length
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
