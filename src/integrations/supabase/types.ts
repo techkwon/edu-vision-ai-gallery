@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -40,6 +40,81 @@ export type Database = {
           prompt?: string
           storage_path?: string | null
           style?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      generation_requests: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          fal_request_id: string | null
+          id: string
+          image_url: string
+          result_url: string | null
+          status: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          fal_request_id?: string | null
+          id?: string
+          image_url: string
+          result_url?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          fal_request_id?: string | null
+          id?: string
+          image_url?: string
+          result_url?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      results: {
+        Row: {
+          created_at: string | null
+          id: number
+          persona_key: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          persona_key: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          persona_key?: string
+        }
+        Relationships: []
+      }
+      teacher_superpower_results: {
+        Row: {
+          created_at: string
+          id: string
+          teacher_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          teacher_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          teacher_type?: string
           updated_at?: string
         }
         Relationships: []
