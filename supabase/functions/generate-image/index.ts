@@ -171,6 +171,71 @@ serve(async (req) => {
     const publicUrl = publicUrlData.publicUrl;
     console.log('공개 URL 생성:', publicUrl);
 
+    // 100개 제한 체크 및 오래된 파일 정리
+    console.log('이미지 개수 체크 시작...');
+    
+    const { count, error: countError } = await supabase
+      .from('generated_images')
+      .select('*', { count: 'exact', head: true })
+      .like('image_url', '%/storage/v1/object/public/education-images/%');
+
+    if (!countError && count !== null && count >= 100) {
+      console.log(`현재 스토리지 이미지 개수: ${count}개, 정리 시작...`);
+      
+      // 가장 오래된 이미지들 조회 (100개를 초과하는 만큼)
+      const deleteCount = count - 99; // 새 이미지 포함해서 100개가 되도록
+      const { data: oldImages, error: queryError } = await supabase
+        .from('generated_images')
+        .select('id, image_url')
+        .like('image_url', '%/storage/v1/object/public/education-images/%')
+        .order('created_at', { ascending: true })
+        .limit(deleteCount);
+
+      if (!queryError && oldImages && oldImages.length > 0) {
+        console.log(`${oldImages.length}개의 오래된 이미지 삭제 시작`);
+        
+        // 스토리지 파일 경로 추출 및 삭제
+        const filePaths = oldImages
+          .map(img => {
+            const url = img.image_url;
+            if (url.includes('/education-images/')) {
+              const parts = url.split('/education-images/');
+              return parts[1];
+            }
+            return null;
+          })
+          .filter(path => path !== null);
+
+        if (filePaths.length > 0) {
+          console.log('삭제할 파일 경로:', filePaths);
+          const { error: deleteStorageError } = await supabase.storage
+            .from('education-images')
+            .remove(filePaths);
+
+          if (deleteStorageError) {
+            console.error('스토리지 파일 삭제 오류:', deleteStorageError);
+          } else {
+            console.log(`${filePaths.length}개 스토리지 파일 삭제 완료`);
+          }
+        }
+
+        // DB 레코드 삭제
+        const imageIds = oldImages.map(img => img.id);
+        const { error: deleteDbError } = await supabase
+          .from('generated_images')
+          .delete()
+          .in('id', imageIds);
+
+        if (deleteDbError) {
+          console.error('DB 레코드 삭제 오류:', deleteDbError);
+        } else {
+          console.log(`${imageIds.length}개 DB 레코드 삭제 완료`);
+        }
+      }
+    } else {
+      console.log(`현재 스토리지 이미지 개수: ${count || 0}개, 정리 불필요`);
+    }
+
     return new Response(
       JSON.stringify({ 
         imageUrl: publicUrl,
