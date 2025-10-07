@@ -23,19 +23,27 @@ Deno.serve(async (req) => {
 
     console.log('스토리지 정리 시작...');
 
-    // 1. DB에 있는 유효한 storage_path 목록 가져오기
+    // 1. DB에 있는 image_url에서 스토리지 파일명 추출
     const { data: validImages, error: dbError } = await supabase
       .from('generated_images')
-      .select('storage_path')
-      .not('storage_path', 'is', null);
+      .select('image_url');
 
     if (dbError) {
       throw new Error(`DB 조회 실패: ${dbError.message}`);
     }
 
+    // 스토리지 URL에서 파일명만 추출
     const validPaths = new Set(
       validImages
-        ?.map(img => img.storage_path)
+        ?.map(img => {
+          const url = img.image_url;
+          // Supabase Storage URL 형식: https://...supabase.co/storage/v1/object/public/education-images/파일명
+          if (url && url.includes('/storage/v1/object/public/education-images/')) {
+            const parts = url.split('/education-images/');
+            return parts[1];
+          }
+          return null;
+        })
         .filter(path => path) || []
     );
 
