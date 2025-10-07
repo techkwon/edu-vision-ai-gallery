@@ -28,12 +28,12 @@ Deno.serve(async (req) => {
     const limit = 100;
     let hasMore = true;
 
-    // 모든 파일 가져오기 (페이지네이션)
+    // images 폴더의 모든 파일 가져오기 (페이지네이션)
     while (hasMore) {
       const { data: files, error: listError } = await supabase
         .storage
         .from('education-images')
-        .list('', {
+        .list('images', {
           limit: limit,
           offset: offset,
           sortBy: { column: 'created_at', order: 'desc' }
@@ -54,18 +54,19 @@ Deno.serve(async (req) => {
 
     console.log(`스토리지 파일 총: ${allFiles.length}개`);
 
-    // .emptyFolderPlaceholder를 제외한 모든 파일 삭제
+    // education-으로 시작하지 않는 파일만 삭제 (.emptyFolderPlaceholder 제외)
     const filesToDelete = allFiles.filter(file => 
-      file.name !== '.emptyFolderPlaceholder'
+      file.name !== '.emptyFolderPlaceholder' && !file.name.startsWith('education-')
     );
 
-    console.log(`삭제할 파일: ${filesToDelete.length}개`);
+    console.log(`삭제할 파일 (education- 제외): ${filesToDelete.length}개`);
 
     if (filesToDelete.length === 0) {
       return new Response(
         JSON.stringify({ 
           message: '정리할 파일이 없습니다.',
-          totalFiles: allFiles.length
+          totalFiles: allFiles.length,
+          educationFiles: allFiles.filter(f => f.name.startsWith('education-')).length
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -74,11 +75,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    // 파일 삭제 (배치로 100개씩)
+    // 파일 삭제 (배치로 100개씩, images/ 경로 포함)
     let deletedCount = 0;
     for (let i = 0; i < filesToDelete.length; i += 100) {
       const batch = filesToDelete.slice(i, i + 100);
-      const pathsToDelete = batch.map(f => f.name);
+      const pathsToDelete = batch.map(f => `images/${f.name}`);
       
       const { error: deleteError } = await supabase
         .storage
@@ -99,7 +100,8 @@ Deno.serve(async (req) => {
       JSON.stringify({ 
         message: '스토리지 정리 완료',
         deletedFiles: deletedCount,
-        totalFiles: allFiles.length
+        totalFiles: allFiles.length,
+        educationFiles: allFiles.filter(f => f.name.startsWith('education-')).length
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
