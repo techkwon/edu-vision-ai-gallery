@@ -27,7 +27,7 @@ const Gallery = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const PAGE_SIZE = 20;
+  const PAGE_SIZE = 10;
 
   useEffect(() => {
     fetchImages();
@@ -38,9 +38,9 @@ const Gallery = () => {
       const from = pageNum * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
       
-      const { data, error, count } = await supabase
+      const { data, error } = await supabase
         .from('generated_images')
-        .select('*', { count: 'exact' })
+        .select('id, prompt, style, image_url, created_at')
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -52,7 +52,8 @@ const Gallery = () => {
         setImages(prev => [...prev, ...(data || [])]);
       }
       
-      setHasMore((count || 0) > (pageNum + 1) * PAGE_SIZE);
+      // 다음 페이지가 있는지 확인 (반환된 데이터가 PAGE_SIZE와 같으면 더 있을 수 있음)
+      setHasMore((data || []).length === PAGE_SIZE);
     } catch (error) {
       console.error('Error fetching images:', error);
       toast({
