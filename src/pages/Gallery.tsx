@@ -33,7 +33,8 @@ const Gallery = () => {
       const { data, error } = await supabase
         .from('generated_images')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(100);
 
       if (error) throw error;
       setImages(data || []);
