@@ -20,24 +20,39 @@ const Gallery = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'focus'>('grid');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  const PAGE_SIZE = 20;
 
   useEffect(() => {
     fetchImages();
   }, []);
 
-  const fetchImages = async () => {
+  const fetchImages = async (pageNum: number = 0) => {
     try {
-      const { data, error } = await supabase
+      const from = pageNum * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+      
+      const { data, error, count } = await supabase
         .from('generated_images')
-        .select('*')
+        .select('*', { count: 'exact' })
         .order('created_at', { ascending: false })
-        .limit(100);
+        .range(from, to);
 
       if (error) throw error;
-      setImages(data || []);
+      
+      if (pageNum === 0) {
+        setImages(data || []);
+      } else {
+        setImages(prev => [...prev, ...(data || [])]);
+      }
+      
+      setHasMore((count || 0) > (pageNum + 1) * PAGE_SIZE);
     } catch (error) {
       console.error('Error fetching images:', error);
       toast({
@@ -47,7 +62,15 @@ const Gallery = () => {
       });
     } finally {
       setIsLoading(false);
+      setLoadingMore(false);
     }
+  };
+  
+  const loadMore = async () => {
+    setLoadingMore(true);
+    const nextPage = page + 1;
+    setPage(nextPage);
+    await fetchImages(nextPage);
   };
 
   const handleDownload = async (imageUrl: string, prompt: string) => {
@@ -194,69 +217,91 @@ const Gallery = () => {
           </Card>
         ) : viewMode === 'grid' ? (
           /* Grid View */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {images.map((image) => (
-              <Dialog key={image.id}>
-                 <DialogTrigger asChild>
-                   <Card className="card-glass card-animated overflow-hidden group touch-target">
-                    <div className="relative">
-                      <img 
-                        src={image.image_url} 
-                        alt={image.prompt}
-                        className="w-full h-48 object-cover transition-transform group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="absolute bottom-2 left-2 right-2 text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                        <p className="text-xs font-medium truncate">{image.prompt}</p>
-                      </div>
-                    </div>
-                  </Card>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl w-full">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <img 
-                        src={image.image_url} 
-                        alt={image.prompt}
-                        className="w-full rounded-lg shadow-medium"
-                      />
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <h3 className="text-xl font-semibold mb-2">이미지 정보</h3>
-                        <div className="space-y-3">
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">프롬프트</label>
-                            <p className="text-sm bg-muted/50 p-3 rounded-lg italic">"{image.prompt}"</p>
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-muted-foreground">스타일</label>
-                            <p className="text-sm capitalize">{image.style}</p>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Calendar className="h-4 w-4" />
-                            {formatDate(image.created_at)}
-                          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {images.map((image) => (
+                <Dialog key={image.id}>
+                   <DialogTrigger asChild>
+                     <Card className="card-glass card-animated overflow-hidden group touch-target">
+                      <div className="relative">
+                        <img 
+                          src={image.image_url} 
+                          alt={image.prompt}
+                          className="w-full h-48 object-cover transition-transform group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="absolute bottom-2 left-2 right-2 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                          <p className="text-xs font-medium truncate">{image.prompt}</p>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          onClick={() => handleDownload(image.image_url, image.prompt)}
-                          className="flex-1 gap-2"
-                        >
-                          <Download className="h-4 w-4" />
-                          다운로드
-                        </Button>
-                        <Button variant="outline" className="gap-2">
-                          <Heart className="h-4 w-4" />
-                        </Button>
+                    </Card>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl w-full">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <img 
+                          src={image.image_url} 
+                          alt={image.prompt}
+                          className="w-full rounded-lg shadow-medium"
+                        />
+                      </div>
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="text-xl font-semibold mb-2">이미지 정보</h3>
+                          <div className="space-y-3">
+                            <div>
+                              <label className="text-sm font-medium text-muted-foreground">프롬프트</label>
+                              <p className="text-sm bg-muted/50 p-3 rounded-lg italic">"{image.prompt}"</p>
+                            </div>
+                            <div>
+                              <label className="text-sm font-medium text-muted-foreground">스타일</label>
+                              <p className="text-sm capitalize">{image.style}</p>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Calendar className="h-4 w-4" />
+                              {formatDate(image.created_at)}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={() => handleDownload(image.image_url, image.prompt)}
+                            className="flex-1 gap-2"
+                          >
+                            <Download className="h-4 w-4" />
+                            다운로드
+                          </Button>
+                          <Button variant="outline" className="gap-2">
+                            <Heart className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            ))}
-          </div>
+                  </DialogContent>
+                </Dialog>
+              ))}
+            </div>
+            
+            {hasMore && (
+              <div className="flex justify-center mt-8">
+                <Button 
+                  onClick={loadMore} 
+                  disabled={loadingMore}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  {loadingMore ? (
+                    <>
+                      <div className="spinner h-4 w-4" />
+                      로딩 중...
+                    </>
+                  ) : (
+                    '더 보기'
+                  )}
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           /* Focus View */
           <div className="max-w-4xl mx-auto">
